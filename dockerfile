@@ -45,7 +45,7 @@ COPY src ./src
 
 # Copy JAR
 WORKDIR /app
-COPY reserve_demo-0.0.1-SNAPSHOT.jar ./target/
+COPY ./target/reserve_demo-0.0.1-SNAPSHOT.jar ./target/
 RUN chmod +x /app/target/reserve_demo-0.0.1-SNAPSHOT.jar
 
 # Expose the port the Spring Boot app runs on
