@@ -39,7 +39,7 @@ fi
 mysql=(mysql --protocol=socket -uroot)
 
 # Set root user password and grant privileges
-echo ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'ye0401'; | "${mysql[@]}"
+echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'ye0401';" | "${mysql[@]}"
 echo "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;" | "${mysql[@]}"
 echo "FLUSH PRIVILEGES;" | "${mysql[@]}"
 
