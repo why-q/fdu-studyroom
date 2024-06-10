@@ -25,6 +25,7 @@ gosu mysql mysqld --bind-address=127.0.0.1 --port=3306 "$@" &
 # Wait for MySQL to be ready
 for i in {30..0}; do
     if mysqladmin ping -h "127.0.0.1" --silent; then
+        echo 'MySQL is ready.'
         break
     fi
     echo 'Waiting for MySQL to be ready...'
@@ -36,25 +37,33 @@ if [ "$i" = 0 ]; then
     exit 1
 fi
 
-mysql=(mysql --protocol=socket -uroot)
-
 # Set root user password and grant privileges
+echo "Set root user password and grant privileges."
+mysqladmin -u root password 'ye0401'
+
+mysql=(mysql --protocol=socket -uroot -p'ye0401')
 echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'ye0401';" | "${mysql[@]}"
 echo "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;" | "${mysql[@]}"
 echo "FLUSH PRIVILEGES;" | "${mysql[@]}"
 
+# Connect using the new root password
+echo "Connect using the new root password."
+mysql=(mysql --protocol=socket -uroot -p'ye0401')
+
 # Check if the database exists, create it if not
-if ! echo 'SHOW DATABASES;' | mysql -uroot -pye0401 | grep -q 'reservation_demo'; then
+echo "Check if the database exists, create it if not."
+if ! echo 'SHOW DATABASES;' | "${mysql[@]}" | grep -q 'reservation_demo'; then
     echo "Creating database reservation_demo..."
-    echo "CREATE DATABASE reservation_demo;" | mysql -uroot -pye0401
+    echo "CREATE DATABASE reservation_demo;" | "${mysql[@]}"
 fi
 
-# import .sql file
+# Import .sql file
+echo "Import .sql file."
 if [ -f /docker-entrypoint-initdb.d/reservation_demo.sql ]; then
     echo "Importing database from /docker-entrypoint-initdb.d/reservation_demo.sql"
-    mysql -uroot -pye0401 reservation_demo </docker-entrypoint-initdb.d/reservation_demo.sql
+    "${mysql[@]}" reservation_demo </docker-entrypoint-initdb.d/reservation_demo.sql
 fi
 
 # Start the Spring Boot application
-echo 'Starting Spring Boot application...'
+echo "Start the SpringBoot application."
 exec java -jar /app/target/reserve_demo-0.0.1-SNAPSHOT.jar
