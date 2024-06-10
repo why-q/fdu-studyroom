@@ -46,7 +46,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/imageName:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/studyroom:latest
         
       - name: SSH
         uses: fifsky/ssh-action@master
